@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#f0f4fa;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Segoe UI',Arial,sans-serif}
+  .calc{background:#011e41;border-radius:20px;padding:22px 18px 18px;width:300px;box-shadow:0 8px 32px rgba(1,30,65,.35)}
+  /* Brand header */
+  .brand{text-align:center;margin-bottom:14px}
+  .brand .logo{display:inline-flex;align-items:center;gap:8px}
+  .brand .cc{font-size:28px;font-weight:900;color:#003da6;background:#fff;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;letter-spacing:-2px}
+  .brand .name{color:#fff;font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+  .brand .sub{color:#7a9cc4;font-size:10px;letter-spacing:1px}
+  /* Screen */
+  .screen{background:#012a5e;border-radius:12px;padding:14px 16px 10px;margin-bottom:14px;min-height:100px}
+  .screen .label{color:#7a9cc4;font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+  .screen .currency-row{display:flex;gap:6px;margin-bottom:8px}
+  .screen .cur-btn{flex:1;padding:5px 0;border:1.5px solid #003da6;border-radius:8px;background:transparent;color:#7a9cc4;font-size:11px;font-weight:600;cursor:pointer;transition:.2s}
+  .screen .cur-btn.active{background:#003da6;color:#fff;border-color:#003da6}
+  .screen .display{text-align:right}
+  .screen .main-val{color:#fff;font-size:26px;font-weight:700;letter-spacing:1px;min-height:34px;word-break:break-all}
+  .screen .main-sym{color:#7a9cc4;font-size:13px;margin-right:4px}
+  /* Conversions */
+  .conversions{margin-top:8px;border-top:1px solid #1a3a6e;padding-top:8px;display:flex;flex-direction:column;gap:4px}
+  .conv-row{display:flex;justify-content:space-between;align-items:center}
+  .conv-row .cur-name{color:#7a9cc4;font-size:11px}
+  .conv-row .cur-val{color:#c8daf5;font-size:13px;font-weight:600}
+  /* Keypad */
+  .keypad{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+  .btn{border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;padding:14px 0;transition:.12s;user-select:none}
+  .btn:active{transform:scale(.94)}
+  .btn-num{background:#0a3070;color:#fff}
+  .btn-num:hover{background:#0d3d8a}
+  .btn-op{background:#003da6;color:#fff}
+  .btn-op:hover{background:#0046c4}
+  .btn-clear{background:#1a4a8a;color:#f5c842;font-size:13px}
+  .btn-clear:hover{background:#1d5299}
+  .btn-del{background:#1a4a8a;color:#f87171;font-size:18px}
+  .btn-del:hover{background:#1d5299}
+  .btn-zero{grid-column:span 2}
+  .footer{text-align:center;margin-top:12px;color:#2e5a9c;font-size:9px;letter-spacing:.8px}
+  /* Rate badge */
+  .rates-note{text-align:center;color:#3a6aac;font-size:9.5px;margin-top:8px;letter-spacing:.3px}
+</style>
+</head>
+<body>
+<div class="calc">
+  <div class="brand">
+    <div class="logo">
+      <div class="cc" style="color:#003da6">CC</div>
+      <div>
+        <div class="name">Cuesta Campos</div>
+        <div class="sub">Conversor Monetario</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen">
+    <div class="label">Moneda base</div>
+    <div class="currency-row">
+      <button class="cur-btn active" onclick="setCur('MXN')">🇲🇽 MXN</button>
+      <button class="cur-btn" onclick="setCur('USD')">🇺🇸 USD</button>
+      <button class="cur-btn" onclick="setCur('EUR')">🇪🇺 EUR</button>
+    </div>
+    <div class="display">
+      <div class="main-val"><span class="main-sym" id="sym">$</span><span id="disp">0</span></div>
+    </div>
+    <div class="conversions" id="convs"></div>
+  </div>
+
+  <div class="keypad">
+    <button class="btn btn-clear" onclick="clearAll()">C</button>
+    <button class="btn btn-del" onclick="del()">⌫</button>
+    <button class="btn btn-op" onclick="append('%')">%</button>
+    <button class="btn btn-op" onclick="append('/')">÷</button>
+
+    <button class="btn btn-num" onclick="append('7')">7</button>
+    <button class="btn btn-num" onclick="append('8')">8</button>
+    <button class="btn btn-num" onclick="append('9')">9</button>
+    <button class="btn btn-op" onclick="append('*')">×</button>
+
+    <button class="btn btn-num" onclick="append('4')">4</button>
+    <button class="btn btn-num" onclick="append('5')">5</button>
+    <button class="btn btn-num" onclick="append('6')">6</button>
+    <button class="btn btn-op" onclick="append('-')">−</button>
+
+    <button class="btn btn-num" onclick="append('1')">1</button>
+    <button class="btn btn-num" onclick="append('2')">2</button>
+    <button class="btn btn-num" onclick="append('3')">3</button>
+    <button class="btn btn-op" onclick="append('+')">+</button>
+
+    <button class="btn btn-num btn-zero" onclick="append('0')">0</button>
+    <button class="btn btn-num" onclick="append('.')">.</button>
+    <button class="btn btn-op" style="background:#003da6;font-size:20px" onclick="calc()">=</button>
+  </div>
+
+  <div class="rates-note" id="rateNote">Tipos de cambio de referencia</div>
+  <div class="footer">CUESTA CAMPOS® · HERRAMIENTA INTERNA</div>
+</div>
+
+<script>
+// ── Tipos de cambio (base MXN) ──────────────────────────
+const RATES = { MXN: 1, USD: 0.0494, EUR: 0.0456 };
+const SYMS  = { MXN:'$', USD:'US$', EUR:'€' };
+const NAMES = { MXN:'Pesos MXN', USD:'Dólares USD', EUR:'Euros EUR' };
+
+let cur = 'MXN';
+let expr = '';
+let justCalc = false;
+
+function setCur(c){
+  cur = c;
+  document.querySelectorAll('.cur-btn').forEach(b=>{
+    b.classList.toggle('active', b.textContent.includes(c));
+  });
+  document.getElementById('sym').textContent = SYMS[c];
+  updateConversions();
+}
+
+function getNum(){
+  let v = parseFloat(expr);
+  return isNaN(v) ? 0 : v;
+}
+
+function updateDisp(val){
+  document.getElementById('disp').textContent = val;
+}
+
+function updateConversions(){
+  const amt = getNum();
+  // convert to MXN first
+  const inMXN = amt / RATES[cur];
+  const others = Object.keys(RATES).filter(k=>k!==cur);
+  let html = '';
+  others.forEach(k=>{
+    const v = (inMXN * RATES[k]).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+    html += `<div class="conv-row"><span class="cur-name">${NAMES[k]}</span><span class="cur-val">${SYMS[k]} ${v}</span></div>`;
+  });
+  document.getElementById('convs').innerHTML = html;
+}
+
+function append(v){
+  const ops = ['+','-','*','/','%'];
+  if(justCalc && !ops.includes(v)){ expr=''; justCalc=false; }
+  if(justCalc && ops.includes(v)){ justCalc=false; }
+  // prevent double operators
+  if(ops.includes(v) && ops.includes(expr.slice(-1))) expr=expr.slice(0,-1);
+  // prevent multiple dots in same number
+  if(v==='.'){
+    const parts = expr.split(/[\+\-\*\/]/);
+    if(parts[parts.length-1].includes('.')) return;
+  }
+  expr += v;
+  updateDisp(expr.replace('*','×').replace('/','÷'));
+  updateConversions();
+}
+
+function clearAll(){
+  expr=''; justCalc=false;
+  updateDisp('0');
+  document.getElementById('convs').innerHTML='';
+}
+
+function del(){
+  expr=expr.slice(0,-1);
+  updateDisp(expr||'0');
+  updateConversions();
+}
+
+function calc(){
+  try{
+    // safe eval via Function
+    let safe = expr.replace(/[^0-9+\-*/.%()]/g,'');
+    // handle % as /100
+    safe = safe.replace(/(\d+)%/g,'($1/100)');
+    let res = Function('"use strict";return ('+safe+')')();
+    if(!isFinite(res)) throw '';
+    res = parseFloat(res.toFixed(10));
+    expr = String(res);
+    updateDisp(res.toLocaleString('es-MX',{maximumFractionDigits:6}));
+    justCalc = true;
+    updateConversions();
+  } catch(e){ updateDisp('Error'); expr=''; }
+}
+
+// init
+updateConversions();
+</script>
+</body>
+</html>
